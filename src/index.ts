@@ -21,6 +21,15 @@ interface Env {
 
 
 export default {
+
+	async email(message, env, ctx): Promise<void> {
+		const allowList = ["asfdasdf@gmail.com", "32323@icloud.com"];
+		if (!allowList.includes(message.from)) {
+			message.setReject("Address not allowed");
+			return;
+		}
+		await message.forward("1133@qq.com");
+	},
 	// The scheduled handler is invoked at the interval set in our wrangler.toml's
 	// [[triggers]] configuration.
 	async scheduled(event, env, ctx): Promise<void> {
@@ -47,5 +56,5 @@ export default {
 		batchQ.push(deleteQ)
 		await env.DB.batch(batchQ);
 	},
-	fetch:app.fetch,
+	fetch: app.fetch,
 } satisfies ExportedHandler<Env>;
