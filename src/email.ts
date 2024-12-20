@@ -7,6 +7,10 @@ interface Env {
     DST_MAIL: string;//eg : xxxx@gmail.com
 }
 
+interface EmailUser {
+    email: string;
+    forwordEmail: string;
+}//todo add database
 
 
 export async function mailHandler(message: ForwardableEmailMessage, env: Env, ctx: ExecutionContext): Promise<void> {
