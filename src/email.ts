@@ -1,5 +1,5 @@
 
-import { D1Database, KVNamespace,ExecutionContext,ForwardableEmailMessage ,EmailMessage} from "@cloudflare/workers-types";
+import { D1Database, KVNamespace, ExecutionContext, ForwardableEmailMessage, EmailMessage } from "@cloudflare/workers-types";
 
 interface Env {
     DB: D1Database;
@@ -10,9 +10,14 @@ interface Env {
 
 
 export async function mailHandler(message: ForwardableEmailMessage, env: Env, ctx: ExecutionContext): Promise<void> {
-    const dstAddr = env.DST_MAIL||'';
+    const dstAddr = env.DST_MAIL || '';
+    console.log('dstAddr:', dstAddr);
     if (!dstAddr) {
         return;
     }
-    await message.forward(dstAddr);
+    try {
+        await message.forward(dstAddr);
+    } catch (e) {
+        console.error(e);
+    }
 }
