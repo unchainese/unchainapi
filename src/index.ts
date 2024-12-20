@@ -13,23 +13,17 @@
 
 import { D1Database, KVNamespace } from "@cloudflare/workers-types";
 import { app } from "./app";
+import { mailHandler } from './email'
 
 interface Env {
 	DB: D1Database;
 	KV: KVNamespace;
+	DST_MAIL: string;//eg : xxxx@gmail.com
 }
 
 
 export default {
 
-	async email(message, env, ctx): Promise<void> {
-		const allowList = ["asfdasdf@gmail.com", "32323@icloud.com"];
-		if (!allowList.includes(message.from)) {
-			message.setReject("Address not allowed");
-			return;
-		}
-		await message.forward("1133@qq.com");
-	},
 	// The scheduled handler is invoked at the interval set in our wrangler.toml's
 	// [[triggers]] configuration.
 	async scheduled(event, env, ctx): Promise<void> {
@@ -57,4 +51,5 @@ export default {
 		await env.DB.batch(batchQ);
 	},
 	fetch: app.fetch,
+	email: mailHandler,
 } satisfies ExportedHandler<Env>;
