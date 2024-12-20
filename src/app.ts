@@ -3,14 +3,8 @@ import { Hono } from 'hono'
 import { setUpWebhook, webhookHandler } from './telegrambot'
 
 
-type Bindings = {
-    DB: D1Database;
-    KV: KVNamespace;
-    TELEGRAM_TOKEN: string;
-    TELEGRAM_WEBHOOK_TOKEN: string;
-}
 
-export const app = new Hono<{ Bindings: Bindings }>()
+export const app = new Hono<{ Bindings: Env }>()
 
 
 app.get('/ping', (c) => c.text('pong'))

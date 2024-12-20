@@ -1,5 +1,4 @@
 import { Bot, webhookCallback } from 'grammy'
-import { HonoRequest } from 'hono';
 
 // https://grammy.dev/guide/commands
 

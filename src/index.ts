@@ -15,11 +15,6 @@ import { D1Database, KVNamespace } from "@cloudflare/workers-types";
 import { app } from "./app";
 import { mailHandler } from './email'
 
-interface Env {
-	DB: D1Database;
-	KV: KVNamespace;
-	DST_MAIL: string;//eg : xxxx@gmail.com
-}
 
 
 export default {

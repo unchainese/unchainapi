@@ -1,15 +1,10 @@
 
 import { D1Database, KVNamespace, ExecutionContext, ForwardableEmailMessage, EmailMessage } from "@cloudflare/workers-types";
 
-interface Env {
-    DB: D1Database;
-    KV: KVNamespace;
-    DST_MAIL: string;//eg : xxxx@gmail.com
-}
 
 interface EmailUser {
     email: string;
-    forwordEmail: string;
+    forwardEmail: string;
 }//todo add database
 
 
