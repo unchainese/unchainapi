@@ -11,10 +11,8 @@
  * Learn more at https://developers.cloudflare.com/workers/
  */
 
-import { D1Database, KVNamespace } from "@cloudflare/workers-types";
 import { app } from "./app";
 import { mailHandler } from './email'
-
 
 
 export default {

@@ -23,7 +23,7 @@ enabled = true
 # Note: Use secrets to store sensitive data.
 # - https://developers.cloudflare.com/workers/configuration/secrets/
  [vars]
-REDIRECT_URI = "https://unchainadmin.pages.dev/auth/google-cb"
+REDIRECT_URI = "https://unchainadmin.pages.dev/api/oauth/google-cb"
 
 
 

@@ -16,7 +16,7 @@ export const apiOAuth = new Hono<{ Bindings: Env }>()
 apiOAuth.get('/google', async (c) => {
     const params = new URLSearchParams({
         client_id: c.env.GOOGLE_CLIENT_ID,
-        redirect_uri: c.env.REDIRECT_URI,
+        redirect_uri: c.env.REDIRECT_URI,//https://unchainadmin.pages.dev/api/oauth/google-cb
         response_type: "code",
         scope: SCOPES,
         access_type: "offline",

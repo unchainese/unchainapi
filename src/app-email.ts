@@ -13,6 +13,8 @@ apiEmails.get('/', async (c) => {
 })
 
 
+
+
 apiEmails.post("/", async (c) => {
     const results = await  c.env.KV.list({prefix: "email:from:"})
     return c.json(results)

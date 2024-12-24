@@ -5,6 +5,7 @@ import { apiUsages } from './app-usages'
 import { apiMeta } from './app-meta'
 import { apiOAuth } from './app-oauth'
 import { apiEmails } from './app-email'
+import { apiTelegram } from './app-telegram'
 
 
 
@@ -17,3 +18,4 @@ app.route('/api/usages', apiUsages)
 app.route('/api/meta', apiMeta)
 app.route("/api/oauth", apiOAuth)
 app.route("/api/emails", apiEmails)
+app.route("/api/telegram",apiTelegram)
