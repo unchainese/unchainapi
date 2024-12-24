@@ -36,6 +36,7 @@ function webhookHandler(telegramToken: string, webhookToken: string) {
         return ctx.reply(info);
     });
     bot.on(['message:photo', 'message:document'], async (ctx) => {
+        //todo:: not working 
         const file = await ctx.getFile();
         const host = 'afasdf.com'
         const tgImgUrl = `https://${host}/img/${file.file_id}`;

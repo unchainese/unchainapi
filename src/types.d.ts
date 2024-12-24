@@ -27,6 +27,13 @@ export interface Usage {
 }
 
 
+export interface TempEmail {
+    email: string//temp email address  
+    dst_email: string // forward to this email address
+    expire_ts: number//second
+}
+
+
 export const cfg = {
     limit: "120",
     offset: "0",
