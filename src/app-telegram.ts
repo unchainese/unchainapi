@@ -59,7 +59,10 @@ export const apiTelegram = new Hono<{ Bindings: Env }>()
 
 
 apiTelegram.get('/setup', async (c) => {
-    const host = new URL(c.req.url).host;
+    const host = c.req.header("host") || '';
+    if (!host) {
+        return c.text('host not found')
+    }
     const webhookToken = c.env.TELEGRAM_WEBHOOK_TOKEN;
     const telegramToken = c.env.TELEGRAM_TOKEN;
     await setUpWebhook(host, telegramToken, webhookToken)

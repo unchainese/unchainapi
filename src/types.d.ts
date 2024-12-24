@@ -5,7 +5,7 @@ export interface User {
     expire_ts: number,
     active_ts: number,
     role: string,//admin,'user' for normal user
-    sub_txt: string,//not a column in db, just for vless URL
+    sub_txt: string,//not a column in db, just for VLESS URL
 }
 
 export interface Node {
