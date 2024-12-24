@@ -1,4 +1,4 @@
-import { User } from "./types";
+import { Node, User } from "./types";
 import { Hono } from "hono";
 
 
@@ -6,7 +6,7 @@ export const apiUsers = new Hono<{ Bindings: Env }>()
 
 apiUsers.get('/', async (c) => {
     const limit = parseInt(c.req.query("size") || '120')
-    const offset = (parseInt(c.req.query("page") || '1') - 1) * limit   
+    const offset = (parseInt(c.req.query("page") || '1') - 1) * limit
     const email = c.req.query("email") || ''
 
     const db = c.env.DB;
@@ -25,7 +25,7 @@ apiUsers.post("/", async (c) => {
     const db = c.env.DB;
     // language=SQL format=false
     const q = `INSERT INTO users (id,email,available_kb,expire_ts,active_ts) VALUES (?,?,?,?,?)`
-    await db.prepare(q).bind(body.id, body.email,  body.available_kb, body.expire_ts, body.active_ts).run();
+    await db.prepare(q).bind(body.id, body.email, body.available_kb, body.expire_ts, body.active_ts).run();
     return c.json(body)
 })
 
@@ -54,4 +54,51 @@ apiUsers.delete("/", async (c) => {
     const q = `DELETE FROM users WHERE id=?`
     await db.prepare(q).bind(body.id).run();
     return c.json(body)
+})
+
+
+
+function genVLESS(userID: string, addrWithPort: string, hostName: string, tls: boolean): string {
+    const path = encodeURIComponent("/wsv/v1?ed=2560");
+    return `vless://${userID}@${addrWithPort}?encryption=none&security=${tls ? "tls" : "none"}&type=ws&host=${hostName}&sni=${hostName}&fp=random&path=${path}#${addrWithPort}`;
+}
+
+function removeDuplicates(arr: string[]): string[] {
+    const map = new Map<string, boolean>();
+    const result: string[] = [];
+
+    for (const str of arr) {
+        if (!map.has(str)) {
+            map.set(str, true);
+            result.push(str);
+        }
+    }
+
+    return result;
+}
+
+
+
+apiUsers.get('/:uid', async (c) => {
+    const { uid } = c.req.param();
+    const db = c.env.DB;
+    const user = await db.prepare("SELECT * FROM users WHERE id = ?").bind(uid).first<User>()
+    if (!user) {
+        return new Response("User not found", { status: 404 })
+    }
+
+    const nowTs = Math.floor(Date.now() / 1000) - 3600 * 24
+    const qq = "SELECT DISTINCT sub_addresses FROM nodes WHERE active_ts > ? LIMIT 100"
+    const { results } = await db.prepare(qq).bind(nowTs).all<Node>();
+
+    const hostPorts = results.map((r) => {
+        return r.sub_addresses.split(",")
+    }).flat().map((addr) => addr.trim());
+
+    const subUrls = removeDuplicates(hostPorts).map((addrPort) => {
+        const isTLS = addrPort.endsWith(":443")
+        return genVLESS(uid, addrPort, "", isTLS)
+    })
+    user.sub_txt = subUrls.join("\n")
+    c.json(user)
 })
