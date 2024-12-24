@@ -9,6 +9,7 @@ export async function mailHandler(message: ForwardableEmailMessage, env: Env, ct
     const dstEmailAddr:string = await env.KV.get(fromEmailAddr) || ""
     if (!dstEmailAddr) {
         console.info(`No forwarding address found for ${message.from}`);
+        message.setReject("Address not allowed");
         return;
     }
     try {

@@ -1,3 +1,4 @@
+import { Hono } from "hono";
 import { Bot, webhookCallback } from 'grammy'
 
 // https://grammy.dev/guide/commands
@@ -5,7 +6,7 @@ import { Bot, webhookCallback } from 'grammy'
 
 // Set your token in the vercel environment variable
 
-export async function setUpWebhook(host: string, telegramToken: string, webhookToken: string) {
+async function setUpWebhook(host: string, telegramToken: string, webhookToken: string) {
     const bot = new Bot(telegramToken);
     await bot.api.setMyCommands([
         { command: 'typescript', description: 'typescript using the bot' },
@@ -22,7 +23,7 @@ export async function setUpWebhook(host: string, telegramToken: string, webhookT
 }
 
 
-export function webhookHandler(telegramToken: string, webhookToken: string) {
+function webhookHandler(telegramToken: string, webhookToken: string) {
     const bot = new Bot(telegramToken);
     bot.command('typescript', (ctx) => ctx.reply('typescript to use Eric Zhou'));
     bot.command('cloudflare', (ctx) => ctx.reply('cloudflare to use Eric Zhou'));
@@ -48,8 +49,24 @@ export function webhookHandler(telegramToken: string, webhookToken: string) {
 
     bot.on('message:text', ctx => ctx.reply(ctx.message.text + ' from Eric Zhou bot'));
 
-    const hh = webhookCallback(bot,'hono',{secretToken:webhookToken})
+    const hh = webhookCallback(bot, 'hono', { secretToken: webhookToken })
     return hh
 }
 
 
+export const apiTelegram = new Hono<{ Bindings: Env }>()
+
+
+
+apiTelegram.get('/setup', async (c) => {
+    const host = new URL(c.req.url).host;
+    const webhookToken = c.env.TELEGRAM_WEBHOOK_TOKEN;
+    const telegramToken = c.env.TELEGRAM_TOKEN;
+    await setUpWebhook(host, telegramToken, webhookToken)
+    return c.text('done')
+})
+
+apiTelegram.post('/webhook', async (c, next) => {
+    const hh = webhookHandler(c.env.TELEGRAM_TOKEN, c.env.TELEGRAM_WEBHOOK_TOKEN)
+    return await hh(c)
+})

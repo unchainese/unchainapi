@@ -22,8 +22,8 @@ enabled = true
 # - https://developers.cloudflare.com/workers/wrangler/configuration/#environment-variables
 # Note: Use secrets to store sensitive data.
 # - https://developers.cloudflare.com/workers/configuration/secrets/
-# [vars]
-# MY_VARIABLE = "production_value"
+ [vars]
+REDIRECT_URI = "https://unchainadmin.pages.dev/auth/google-cb"
 
 
 
@@ -59,3 +59,7 @@ id = "306de1efa1424041a36d8175ce40252c"
 # bucket_name = "my-bucket"
 
 
+
+routes = [
+  { pattern = "admin.unchainese.us.kg/api/*", zone_name = "admin.unchainese.us.kg" },
+]
