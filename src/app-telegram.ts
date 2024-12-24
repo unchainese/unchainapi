@@ -16,7 +16,7 @@ async function setUpWebhook(host: string, telegramToken: string, webhookToken: s
         { command: 'help', description: 'Show help info' },
     ]);
 
-    await bot.api.setWebhook(`https://${host}/telegram/webhook`, {
+    await bot.api.setWebhook(`https://${host}/api/telegram/webhook`, {
         drop_pending_updates: true,
         secret_token: webhookToken,
     });

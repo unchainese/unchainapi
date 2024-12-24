@@ -10,7 +10,7 @@ apiUsers.get('/', async (c) => {
     const email = c.req.query("email") || ''
 
     const db = c.env.DB;
-    const q = `SELECT * FROM users WHERE email LIKE ? LIMIT ?1 OFFSET ?2`
+    const q = `SELECT * FROM users LIMIT ?1 OFFSET ?2`
     const users = await db.prepare(q).bind(limit, offset).all<User>();
     return c.json(users.results)
 })
