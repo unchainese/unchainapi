@@ -1,22 +1,19 @@
 
-import { D1Database, KVNamespace, ExecutionContext, ForwardableEmailMessage, EmailMessage } from "@cloudflare/workers-types";
+import { ExecutionContext, ForwardableEmailMessage } from "@cloudflare/workers-types";
 
-
-interface EmailUser {
-    email: string;
-    forwardEmail: string;
-}//todo add database
 
 
 export async function mailHandler(message: ForwardableEmailMessage, env: Env, ctx: ExecutionContext): Promise<void> {
-    const dstAddr = env.DST_MAIL || '';
-    console.log('dstAddr:', dstAddr);
-    if (!dstAddr) {
+    const fromEmailAddr = `email:from:${message.from}`
+    //set kv email address in another worker
+    const dstEmailAddr:string = await env.KV.get(fromEmailAddr) || ""
+    if (!dstEmailAddr) {
+        console.info(`No forwarding address found for ${message.from}`);
         return;
     }
     try {
-        await message.forward(dstAddr);
+        await message.forward(dstEmailAddr);
     } catch (e) {
-        console.error(e);
+        console.error(`Error forwarding email: ${e}`);
     }
 }
