@@ -9,7 +9,7 @@ CREATE TABLE usages ("uid" integer,"kb" integer,"created_date" text, category te
 
 
 CREATE TABLE temp_emails (
-    temp_email VARCHAR(255) PRIMARY KEY,
+    email VARCHAR(255) PRIMARY KEY,
     forward_email VARCHAR(255) NOT NULL,
     expire_ts INT NOT NULL
 );

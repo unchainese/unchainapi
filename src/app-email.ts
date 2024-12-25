@@ -23,8 +23,8 @@ apiEmails.post("/", async (c) => {
     body.expire_ts = Math.floor(Date.now() / 1000) + 3600 * 24 * 30;
 
     const { DB: db } = c.env
-    const qq = `INSERT INTO temp_emails (email,dst_email,expire_ts) VALUES (?,?,?)`
-    await db.prepare(qq).bind(body.email, body.dst_email, body.expire_ts).run()
+    const qq = `INSERT INTO temp_emails (email,forward_email,expire_ts) VALUES (?,?,?)`
+    await db.prepare(qq).bind(body.email, body.forward_email, body.expire_ts).run()
     return c.json(body)
 })
 

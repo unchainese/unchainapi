@@ -29,7 +29,7 @@ export interface Usage {
 
 export interface TempEmail {
     email: string//temp email address  
-    dst_email: string // forward to this email address
+    forward_email: string // forward to this email address
     expire_ts: number//second
 }
 
