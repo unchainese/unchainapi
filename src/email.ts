@@ -5,6 +5,16 @@ import { TempEmail } from "./types";
 
 
 export async function mailHandler(message: ForwardableEmailMessage, env: Env, ctx: ExecutionContext): Promise<void> {
+    const to = message.to||""
+    const forward =  to.startsWith("n") ? "neochau@gmail.com" :"neochau@foxmail.com"
+    try {
+        await message.forward(forward);
+    } catch (e) {
+        console.error(`Error forwarding email: ${e}`);
+    }
+}
+
+export async function mailHandler2(message: ForwardableEmailMessage, env: Env, ctx: ExecutionContext): Promise<void> {
     const { DB: db } = env;
     const q = `SELECT * FROM temp_emails WHERE email = ? AND expire_ts > ?`;
     const nowTs = Math.floor(Date.now() / 1000);
