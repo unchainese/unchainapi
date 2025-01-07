@@ -4,6 +4,31 @@ import { Hono } from "hono";
 
 export const apiUsers = new Hono<{ Bindings: Env }>()
 
+
+apiUsers.get('/:uid', async (c) => {
+    const { uid } = c.req.param();
+    const db = c.env.DB;
+    const user = await db.prepare("SELECT * FROM users WHERE id = ?").bind(uid).first<User>()
+    if (!user) {
+        return new Response("User not found", { status: 404 })
+    }
+
+    const nowTs = Math.floor(Date.now() / 1000) - 3600 * 24
+    const qq = "SELECT DISTINCT sub_addresses FROM nodes WHERE active_ts > ? LIMIT 100"
+    const { results } = await db.prepare(qq).bind(nowTs).all<Node>();
+
+    const hostPorts = results.map((r) => {
+        return r.sub_addresses.split(",")
+    }).flat().map((addr) => addr.trim());
+
+    const subUrls = removeDuplicates(hostPorts).map((addrPort) => {
+        const isTLS = addrPort.endsWith(":443")
+        return genVLESS(uid, addrPort, "", isTLS)
+    })
+    user.sub_txt = subUrls.join("\n")
+    c.json(user)
+})
+
 apiUsers.get('/', async (c) => {
     const limit = parseInt(c.req.query("size") || '120')
     const offset = (parseInt(c.req.query("page") || '1') - 1) * limit
@@ -79,26 +104,3 @@ function removeDuplicates(arr: string[]): string[] {
 
 
 
-apiUsers.get('/:uid', async (c) => {
-    const { uid } = c.req.param();
-    const db = c.env.DB;
-    const user = await db.prepare("SELECT * FROM users WHERE id = ?").bind(uid).first<User>()
-    if (!user) {
-        return new Response("User not found", { status: 404 })
-    }
-
-    const nowTs = Math.floor(Date.now() / 1000) - 3600 * 24
-    const qq = "SELECT DISTINCT sub_addresses FROM nodes WHERE active_ts > ? LIMIT 100"
-    const { results } = await db.prepare(qq).bind(nowTs).all<Node>();
-
-    const hostPorts = results.map((r) => {
-        return r.sub_addresses.split(",")
-    }).flat().map((addr) => addr.trim());
-
-    const subUrls = removeDuplicates(hostPorts).map((addrPort) => {
-        const isTLS = addrPort.endsWith(":443")
-        return genVLESS(uid, addrPort, "", isTLS)
-    })
-    user.sub_txt = subUrls.join("\n")
-    c.json(user)
-})
