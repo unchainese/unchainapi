@@ -7,6 +7,7 @@ export const apiUsers = new Hono<{ Bindings: Env }>()
 
 apiUsers.get('/:id', async (c) => {
     const  id  = c.req.param('id');
+		console.error("user detail id",id)
     const db = c.env.DB;
     const user = await db.prepare("SELECT * FROM users WHERE id = ?").bind(id).first<User>()
     if (!user) {
