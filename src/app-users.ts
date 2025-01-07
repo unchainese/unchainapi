@@ -17,7 +17,7 @@ apiUsers.get('/:id', async (c) => {
     const nowTs = Math.floor(Date.now() / 1000) - 3600 * 24
     const qq = "SELECT DISTINCT sub_addresses FROM nodes WHERE active_ts > ? LIMIT 100"
     const { results } = await db.prepare(qq).bind(nowTs).all<Node>();
-
+		console.error("user detail results",results)
     const hostPorts = results.map((r) => {
         return r.sub_addresses.split(",")
     }).flat().map((addr) => addr.trim());
