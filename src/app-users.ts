@@ -28,7 +28,7 @@ apiUsers.get('/:id', async (c) => {
         return genVLESS(id, addrPort, "", isTLS)
     })
     user.sub_txt = subUrls.join("\n")
-    c.json(user)
+    return c.json(user)
 })
 
 apiUsers.get('/', async (c) => {
