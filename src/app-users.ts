@@ -7,18 +7,14 @@ export const apiUsers = new Hono<{ Bindings: Env }>()
 
 apiUsers.get('/:id', async (c) => {
     const  id  = c.req.param('id');
-		console.error("user detail id",id)
     const db = c.env.DB;
     const user = await db.prepare("SELECT * FROM users WHERE id = ?").bind(id).first<User>()
     if (!user) {
         return new Response("User not found", { status: 404 })
     }
-
     const nowTs = Math.floor(Date.now() / 1000) - 3600 * 24
     const qq = "SELECT DISTINCT sub_addresses FROM nodes WHERE active_ts > ? LIMIT 100"
     const { results } = await db.prepare(qq).bind(nowTs).all<Node>();
-		console.error("user detail results",JSON.stringify(results))
-		console.error("user detail info",JSON.stringify(user))
     const hostPorts = results.map((r) => {
         return r.sub_addresses.split(",")
     }).flat().map((addr) => addr.trim());
