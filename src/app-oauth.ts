@@ -58,7 +58,7 @@ apiOAuth.get('/google-cb', async (c) => {
     if (!userEmail) {
         console.error("email not found");
         console.error(userInfo);
-        return new Response("email not found", {status: 400});
+        return new Response("email not found", {status: 400});//todo:: fix this
     }
     let user = await c.env.DB.prepare("SELECT * FROM users WHERE email = ?").bind(userEmail).first<User>();
     if (!user) {

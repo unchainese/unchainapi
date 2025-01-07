@@ -5,10 +5,10 @@ import { Hono } from "hono";
 export const apiUsers = new Hono<{ Bindings: Env }>()
 
 
-apiUsers.get('/:uid', async (c) => {
-    const { uid } = c.req.param();
+apiUsers.get('/:id', async (c) => {
+    const  id  = c.req.param('id');
     const db = c.env.DB;
-    const user = await db.prepare("SELECT * FROM users WHERE id = ?").bind(uid).first<User>()
+    const user = await db.prepare("SELECT * FROM users WHERE id = ?").bind(id).first<User>()
     if (!user) {
         return new Response("User not found", { status: 404 })
     }
@@ -23,7 +23,7 @@ apiUsers.get('/:uid', async (c) => {
 
     const subUrls = removeDuplicates(hostPorts).map((addrPort) => {
         const isTLS = addrPort.endsWith(":443")
-        return genVLESS(uid, addrPort, "", isTLS)
+        return genVLESS(id, addrPort, "", isTLS)
     })
     user.sub_txt = subUrls.join("\n")
     c.json(user)
