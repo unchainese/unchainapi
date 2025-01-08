@@ -37,7 +37,8 @@ database_id = "9c8303fd-976c-44ed-8114-ebca1138c81c"
 
 
 
-
+[ai]
+binding = "AI"
 
 
 
