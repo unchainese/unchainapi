@@ -24,7 +24,7 @@ enabled = true
 # - https://developers.cloudflare.com/workers/configuration/secrets/
  [vars]
 REDIRECT_URI = "https://unchain.libragen.cn/"
-GOOGLE_CLIENT_ID = "800757779970-ogh0u2a80jpi0pdmehbc46poqi5oucpf.apps.googleusercontent.com
+GOOGLE_CLIENT_ID = 800757779970-ogh0u2a80jpi0pdmehbc46poqi5oucpf.apps.googleusercontent.com
 
 
 [env.staging.vars]
