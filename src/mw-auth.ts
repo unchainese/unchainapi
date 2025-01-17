@@ -12,6 +12,7 @@ export const mwAuth = createMiddleware<{
 	// }
 }>(async (c, next) => {
 	const email = await getSignedCookie(c,c.env.APP_SECRET,"token")
+	console.log("token",email)
 	if	(email != "neochau@gamil.com"){
 		return c.json({error: "Forbidden"}, 403)
 	}
