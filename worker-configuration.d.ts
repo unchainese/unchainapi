@@ -5,7 +5,7 @@ interface Env {
 	REDIRECT_URI: "https://unchainadmin.pages.dev/auth/google-cb";
 	DST_MAIL: string;
 	TELEGRAM_TOKEN: string;
-	TELEGRAM_WEBHOOK_TOKEN: string;
+	APP_SECRET: string;//app secret
 	GOOGLE_CLIENT_ID: string;
 	GOOGLE_CLIENT_SECRET: string;
 	DB: D1Database;

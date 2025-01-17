@@ -1,12 +1,19 @@
 
 
 import { createMiddleware } from 'hono/factory'
+import {
+	getSignedCookie,
+} from 'hono/cookie'
 
-const logger = createMiddleware<{
-	Variables: {
-		echo: (str: string) => string
-	}
+export const mwAuth = createMiddleware<{
+	Bindings: Env,
+	// Variables: {
+	// 	echo: (str: string) => string
+	// }
 }>(async (c, next) => {
-	console.log(`[${c.req.method}] ${c.req.url}`)
+	const email = await getSignedCookie(c,c.env.APP_SECRET,"token")
+	if	(email != "neochau@gamil.com"){
+		return c.json({error: "Forbidden"}, 403)
+	}
 	await next()
 })

@@ -36,7 +36,7 @@ function webhookHandler(telegramToken: string, webhookToken: string) {
         return ctx.reply(info);
     });
     bot.on(['message:photo', 'message:document'], async (ctx) => {
-        //todo:: not working 
+        //todo:: not working
         const file = await ctx.getFile();
         const host = 'afasdf.com'
         const tgImgUrl = `https://${host}/img/${file.file_id}`;
@@ -64,13 +64,13 @@ apiTelegram.get('/setup', async (c) => {
     if (!host) {
         return c.text('host not found')
     }
-    const webhookToken = c.env.TELEGRAM_WEBHOOK_TOKEN;
+    const webhookToken = c.env.APP_SECRET;
     const telegramToken = c.env.TELEGRAM_TOKEN;
     await setUpWebhook(host, telegramToken, webhookToken)
     return c.text('done')
 })
 
 apiTelegram.post('/webhook', async (c, next) => {
-    const hh = webhookHandler(c.env.TELEGRAM_TOKEN, c.env.TELEGRAM_WEBHOOK_TOKEN)
+    const hh = webhookHandler(c.env.TELEGRAM_TOKEN, c.env.APP_SECRET)
     return await hh(c)
 })
