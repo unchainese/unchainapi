@@ -37,7 +37,7 @@ apiNodes.post('/', async (c) => {
     const clientIP = c.req.header("cf-connecting-ip") || '';
     const sub_addresses = body.sub_addresses.join(",")
     await db.prepare("DELETE FROM nodes WHERE ip = ?").bind(clientIP).run();
-    const qq = "INSERT INTO nodes (hostname, ip, active_ts, goroutine, version_info,sub_addresses) VALUES (?, ?, ?, ?, ?, ?, ?)"
+    const qq = "INSERT INTO nodes (hostname, ip, active_ts, goroutine, version_info, sub_addresses) VALUES (?, ?, ?, ?, ?, ?)"
     await db.prepare(qq).bind(body.hostname, clientIP, nowTs, body.goroutine, body.version_info, sub_addresses).run();
 
     const qqq = "SELECT * FROM users WHERE expire_ts > ? AND available_kb > ?"
