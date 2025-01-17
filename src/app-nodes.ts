@@ -60,6 +60,7 @@ apiNodes.post('/', async (c) => {
             allowUsers[id] = u.available_kb
         }
         if (usedKB<1) continue;
+        console.log("set uid",id,u.available_kb)
         const userKbUpdate = db.prepare("UPDATE users SET available_kb = ? WHERE id = ?").bind(u.available_kb,id)
         const stmtUsageInsert = db.prepare("INSERT INTO usages (uid,kb,created_date,category) VALUES (?,?,?,?)").bind(id, usedKB, nowDate, 'raw')
 
