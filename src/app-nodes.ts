@@ -31,8 +31,8 @@ apiNodes.get('/', async (c) => {
 
 apiNodes.post('/', async (c) => {
     const body = await c.req.json<AppStat>();
-		console.error("push json")
-		console.info(body)
+    console.log("push body")
+    console.error(body)
     const db = c.env.DB;
     const nowTs = Math.floor(Date.now() / 1000)
     const clientIP = c.req.header("cf-connecting-ip") || '';
@@ -59,7 +59,7 @@ apiNodes.post('/', async (c) => {
         }else{
             allowUsers[id] = u.available_kb
         }
-        if (!usedKB) continue;
+        if (usedKB<1) continue;
         const userKbUpdate = db.prepare("UPDATE users SET available_kb = ? WHERE id = ?").bind(u.available_kb,id)
         const stmtUsageInsert = db.prepare("INSERT INTO usages (uid,kb,created_date,category) VALUES (?,?,?,?)").bind(id, usedKB, nowDate, 'raw')
 
