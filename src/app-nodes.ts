@@ -31,6 +31,8 @@ apiNodes.get('/', async (c) => {
 
 apiNodes.post('/', async (c) => {
     const body = await c.req.json<AppStat>();
+		console.error("push json")
+		console.info(body)
     const db = c.env.DB;
     const nowTs = Math.floor(Date.now() / 1000)
     const clientIP = c.req.header("cf-connecting-ip") || '';
