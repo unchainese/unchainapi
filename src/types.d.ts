@@ -11,7 +11,6 @@ export interface User {
 export interface Node {
     hostname: string
     ip: string
-    req_count: number
     active_ts: number
     goroutine: number;
     version_info: string,

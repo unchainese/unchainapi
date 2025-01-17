@@ -9,7 +9,6 @@ interface AppStat {
     traffic: { [key: string]: number };//uuid -> KB number
     hostname: string;
     sub_addresses: string[];
-    req_count: number;
     goroutine: number;
     version_info: string,
 }
@@ -38,8 +37,8 @@ apiNodes.post('/', async (c) => {
     const clientIP = c.req.header("cf-connecting-ip") || '';
     const sub_addresses = body.sub_addresses.join(",")
     await db.prepare("DELETE FROM nodes WHERE ip = ?").bind(clientIP).run();
-    const qq = "INSERT INTO nodes (hostname, ip, req_count, active_ts, goroutine, version_info,sub_addresses) VALUES (?, ?, ?, ?, ?, ?, ?)"
-    await db.prepare(qq).bind(body.hostname, clientIP, body.req_count, nowTs, body.goroutine, body.version_info, sub_addresses).run();
+    const qq = "INSERT INTO nodes (hostname, ip, active_ts, goroutine, version_info,sub_addresses) VALUES (?, ?, ?, ?, ?, ?, ?)"
+    await db.prepare(qq).bind(body.hostname, clientIP, nowTs, body.goroutine, body.version_info, sub_addresses).run();
 
     const qqq = "SELECT * FROM users WHERE expire_ts > ? AND available_kb > ?"
     const {results} = await db.prepare(qqq).bind(nowTs, 0).all<User>();
