@@ -2,8 +2,6 @@ import { Hono } from "hono"
 import { TempEmail } from "./types"
 
 
-
-
 export const apiEmails = new Hono<{ Bindings: Env }>()
 
 

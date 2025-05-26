@@ -16,13 +16,12 @@ apiUsers.get('/:id', async (c) => {
     const nowTs = Math.floor(Date.now() / 1000) - 3600 * 24
     const qq = "SELECT DISTINCT sub_addresses FROM nodes WHERE active_ts > ? LIMIT 100"
     const { results } = await db.prepare(qq).bind(nowTs).all<Node>();
-    const hostPorts = results.map((r) => {
-        return r.sub_addresses.split(",")
+    const ips = results.map((r) => {
+        return r.ip.trim()
     }).flat().map((addr) => addr.trim());
 
-    const subUrls = removeDuplicates(hostPorts).map((addrPort) => {
-        const isTLS = addrPort.endsWith(":443")
-        return genVLESS(id, addrPort, "", isTLS)
+    const subUrls = removeDuplicates(ips).map((ip) => {
+        return genVLESS(id, ip+":80", "ip", false)
     })
     user.sub_txt = subUrls.join("\n")
     return c.json(user)
