@@ -14,7 +14,7 @@ apiUsers.get('/:id', async (c) => {
         return new Response("User not found", { status: 404 })
     }
     const nowTs = Math.floor(Date.now() / 1000) - 3600 * 24
-    const qq = "SELECT DISTINCT sub_addresses FROM nodes WHERE active_ts > ? LIMIT 100"
+    const qq = "SELECT DISTINCT ip FROM nodes WHERE active_ts > ? LIMIT 100"
     const { results } = await db.prepare(qq).bind(nowTs).all<Node>();
     const ips = results.map((r) => {
         return r.ip.trim()
