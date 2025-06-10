@@ -1,7 +1,7 @@
 import { Hono } from "hono";
 import {  User } from "./types";
 import  bcrypt from "bcryptjs";
-import jwt from 'hono/jwt'
+import { sign} from 'hono/jwt'
 
 
 
@@ -37,7 +37,7 @@ apiAuth.post('/login', async (c) => {
 	}
 	const maxAge = 3600 * 24 * 30; // 30 days
 	const payload = { id: user.id, email: user.email,exp: Math.floor(Date.now() / 1000) + maxAge };
-	const token = await jwt.sign(payload, c.env.APP_SECRET);
+	const token = await sign(payload, c.env.APP_SECRET);
 	//set cookie
 	c.header('Set-Cookie', `token=${token}; HttpOnly; Secure; SameSite=Strict; Path=/; Max-Age=${maxAge}`); // 30 days
 	return c.json({ token, user: { id: user.id, email: user.email, available_kb: user.available_kb, expire_ts: user.expire_ts } });
