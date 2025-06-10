@@ -1,12 +1,10 @@
-import { Hono } from "hono";
-import {  User } from "./types";
-import  bcrypt from "bcryptjs";
-import { sign} from 'hono/jwt'
+import { Hono } from 'hono';
+import { User } from './types';
+import bcrypt from 'bcryptjs';
+import { sign } from 'hono/jwt';
 
 
-
-export const apiAuth = new Hono<{ Bindings: Env }>()
-
+export const apiAuth = new Hono<{ Bindings: Env }>();
 
 
 interface ReqLogin {
@@ -20,40 +18,39 @@ interface ReqRegister {
 }
 
 
-
 apiAuth.post('/login', async (c) => {
 	const args = await c.req.json<ReqLogin>();
 	const db = c.env.DB;
-	const user = await db.prepare("SELECT * FROM users WHERE email = ?").bind(args.email).first<User>()
+	const user = await db.prepare('SELECT * FROM users WHERE email = ?').bind(args.email).first<User>();
 	if (!user) {
-		return new Response("User not found", { status: 401 })
+		return c.json({ code: 401,msg:"无效用户"});
 	}
 	if (!user.password) {
-		return new Response("User has no password set", { status: 401 })
+		return c.json({ code: 401,msg:"用户没有设置密码,请使用GoogleOauth2登录"});
 	}
 	const isMatch = await bcrypt.compare(args.password, user.password);
 	if (!isMatch) {
-		return new Response("Invalid password", { status: 401 })
+		return c.json({ code: 401,msg:"密码错误"});
 	}
 	const maxAge = 3600 * 24 * 30; // 30 days
-	const payload = { id: user.id, email: user.email,exp: Math.floor(Date.now() / 1000) + maxAge };
+	const payload = { id: user.id, email: user.email, exp: Math.floor(Date.now() / 1000) + maxAge };
 	const token = await sign(payload, c.env.APP_SECRET);
 	//set cookie
 	c.header('Set-Cookie', `token=${token}; HttpOnly; Secure; SameSite=Strict; Path=/; Max-Age=${maxAge}`); // 30 days
-	return c.json({ token, user: { id: user.id, email: user.email, available_kb: user.available_kb, expire_ts: user.expire_ts } });
+	return c.json({ code: 200, token, user: { id: user.id, email: user.email, available_kb: user.available_kb, expire_ts: user.expire_ts } });
 
-})
+});
 
 
 apiAuth.post('/register', async (c) => {
 	const args = await c.req.json<ReqRegister>();
 	const db = c.env.DB;
-	const user = await db.prepare("SELECT * FROM users WHERE email = ?").bind(args.email).first<User>()
+	const user = await db.prepare('SELECT * FROM users WHERE email = ?').bind(args.email).first<User>();
 	if (user) {
-		return c.json({ msg: "Email已经被占用,请到登录页面找回密码" ,code:409});
+		return c.json({ msg: 'Email已经被占用,请到登录页面找回密码', code: 409 });
 	}
-	if(args.password && args.password.length < 8) {
-		return c.json({msg: "密码长度必须超过8字符" ,code:400});
+	if (args.password && args.password.length < 8) {
+		return c.json({ msg: '密码长度必须超过8字符', code: 400 });
 	}
 	const hashedPassword = await bcrypt.hash(args.password, 10);
 	// Create new user in the database
@@ -67,25 +64,26 @@ apiAuth.post('/register', async (c) => {
 		role: 'user',
 		sub_txt: ''
 	};
-	const q = `INSERT INTO users (id, email, password,status) VALUES (?, ?, ?, ?)`;
+	const q = `INSERT INTO users (id, email, password, status)
+						 VALUES (?, ?, ?, ?)`;
 	const result = await db.prepare(q).bind(newUser.id, newUser.email, newUser.password, 'inactive').run();
 	if (result.success) {
-		return c.json({ msg: "用户注册成功" ,code:500});
+		return c.json({ msg: '用户注册成功', code: 200 });
 	} else {
-		return c.json({ msg: "用户注册失败" ,code:500});
+		return c.json({ msg: '用户注册失败', code: 500 });
 	}
-})
+});
 
 apiAuth.post('/reset', async (c) => {
 	const body = await c.req.json<ReqLogin>();
 	const db = c.env.DB;
 
 	//todo send the email to reset password
-	return c.json({ msg: "Reset password email sent" });
-})
+	return c.json({ msg: 'Reset password email sent' });
+});
 
 
 apiAuth.get('/reset-verify', async (c) => {
 	//todo send the email to reset password
-	return c.json({ msg: "Reset password email sent" });
-})
+	return c.json({ msg: 'Reset password email sent' });
+});
