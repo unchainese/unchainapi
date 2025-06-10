@@ -86,9 +86,6 @@ apiAuth.post('/reset', async (c) => {
 
 
 apiAuth.get('/reset-verify', async (c) => {
-	const body = await c.req.json<ReqLogin>();
-	const db = c.env.DB;
-
 	//todo send the email to reset password
 	return c.json({ msg: "Reset password email sent" });
 })
