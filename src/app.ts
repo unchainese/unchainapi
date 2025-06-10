@@ -8,6 +8,7 @@ import { apiEmails } from './app-email'
 import { apiTelegram } from './app-telegram'
 import { apiVLESS } from './app-vless'
 import { mwAuth } from './mw-auth';
+import { apiAuth } from './app-auth';
 
 
 
@@ -18,6 +19,7 @@ app.route('/api/users', apiUsers)
 app.route('/api/nodes', apiNodes)
 app.route('/api/usages', apiUsages)
 app.route('/api/meta', apiMeta)
+app.route("/api/auth", apiAuth)
 app.route("/api/oauth", apiOAuth)
 app.route("/api/emails", apiEmails)
 app.route("/api/telegram",apiTelegram)

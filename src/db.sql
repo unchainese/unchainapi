@@ -5,6 +5,12 @@ CREATE TABLE nodes ("hostname" text,"ip" text,"active_ts" integer, version_info 
 
 CREATE TABLE users ("id" text,"email" text PRIMARY KEY,"available_kb" integer DEFAULT 0,"expire_ts" integer DEFAULT 0,"active_ts" integer DEFAULT 0,"role" text DEFAULT 'user')
 
+ALTER TABLE users
+	ADD COLUMN password TEXT DEFAULT '',
+ADD COLUMN status TEXT DEFAULT 'inactive';
+
+
+
 CREATE TABLE usages ("uid" integer,"kb" integer,"created_date" text, category text DEFAULT 'raw')
 
 
