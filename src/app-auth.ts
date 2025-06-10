@@ -50,10 +50,10 @@ apiAuth.post('/register', async (c) => {
 	const db = c.env.DB;
 	const user = await db.prepare("SELECT * FROM users WHERE email = ?").bind(args.email).first<User>()
 	if (user) {
-		return new Response("User already exists", { status: 409 });
+		return c.json({ msg: "Email已经被占用,请到登录页面找回密码" ,code:409});
 	}
 	if(args.password && args.password.length < 8) {
-		return new Response("Password must be at least 8 characters long", { status: 400 });
+		return c.json({msg: "密码长度必须超过8字符" ,code:400});
 	}
 	const hashedPassword = await bcrypt.hash(args.password, 10);
 	// Create new user in the database
@@ -70,9 +70,9 @@ apiAuth.post('/register', async (c) => {
 	const q = `INSERT INTO users (id, email, password,status) VALUES (?, ?, ?, ?)`;
 	const result = await db.prepare(q).bind(newUser.id, newUser.email, newUser.password, 'inactive').run();
 	if (result.success) {
-		return new Response("Register is done", { status: 200 });
+		return c.json({ msg: "用户注册成功" ,code:500});
 	} else {
-		return new Response("Failed to create user", { status: 500 });
+		return c.json({ msg: "用户注册失败" ,code:500});
 	}
 })
 
