@@ -2,7 +2,7 @@ import { ExecutionContext, ForwardableEmailMessage } from '@cloudflare/workers-t
 import { EmailMessage } from 'cloudflare:email';
 import { createMimeMessage } from 'mimetext';
 import { User } from './types';
-import { randStr } from './utils';
+import { jwtCreate, randStr } from './utils';
 
 // npm install mimetext
 
@@ -85,8 +85,11 @@ async function mailRegisterFree(message: ForwardableEmailMessage, env: Env): Pro
 	//create new user
 	const randomPassword = randStr(10);
 	try {
+		const token = await jwtCreate(senderEmail, env.APP_SECRET);
+		const userURL = `https://unchain.libragen.cn/#/user?token=${token}`;
 		subject = '注册成功';
 		body = `您好, ${senderEmail} 您的账号已经创建成功,请妥善保存密码 \r\n密码:  ${randomPassword} \r\n 同时你将活动永久 10GB 免费流量`;
+		body += `\r\n请访问以下链接查看您的账号信息: ${userURL}`;
 		await emailSend(message, env, subject, body);
 		return;
 	} catch (e) {

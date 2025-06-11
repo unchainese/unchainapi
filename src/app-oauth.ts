@@ -70,7 +70,7 @@ apiOAuth.get('/google-cb', async (c) => {
 		await c.env.DB.prepare(q).bind(user.id, user.email, user.available_kb, user.expire_ts, user.active_ts).run();
 	}
 	//write cookie
-	const redirectUrl = `https://${c.req.header('host')}/`;
+	const redirectUrl = `https://${c.req.header('host')}/#/user`;
 
 	const token = await jwtCreate(user.email, c.env.APP_SECRET);
 
