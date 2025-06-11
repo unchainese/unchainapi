@@ -72,11 +72,16 @@ async function emailSend(message: ForwardableEmailMessage, env: Env, subject: st
 async function mailRegisterFree(message: ForwardableEmailMessage, env: Env): Promise<void> {
 	const randomPassword = randStr(10);
 	try {
-		await bizUserCreate(env, message.from, randomPassword, 10); // Create user with 10GB free traffic
+		await bizUserCreate(env, message.from, randomPassword, 10,'active'); // Create user with 10GB free traffic
 		const token = await jwtCreate(message.from, env.APP_SECRET);
 		const userURL = `https://unchain.libragen.cn/#/user?token=${token}`;
 		const subject = '注册成功';
-		const body = `您好, ${message.from} 您的账号已经创建成功,请妥善保存密码 \r\n密码:  ${randomPassword} \r\n 同时你将活动永久 10GB 免费流量\r\n 请访问以下链接查看您的账号信息: ${userURL}`;
+		const body = `您好, ${message.from}
+您的账号已经创建成功,请妥善保存密码
+\r\n密码:  ${randomPassword}
+\r\n 同时你将活动永久 10GB 免费流量
+\r\n 请访问以下链接查看您的账号信息: ${userURL}`;
+
 		await emailSend(message, env, subject, body);
 		return;
 	} catch (e) {

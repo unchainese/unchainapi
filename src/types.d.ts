@@ -4,7 +4,6 @@ export interface User {
 	available_kb: number
 	expire_ts: number,
 	active_ts: number,
-	role: string,//admin,'user' for normal user
 	sub_txt: string,//not a column in db, just for VLESS URL
 	password?: string,//optional, for login  bcrypt-hashed
 	status?: string,//optional, 'active', 'inactive', 'banned'

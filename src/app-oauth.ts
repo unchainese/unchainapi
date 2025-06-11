@@ -1,7 +1,8 @@
 import { Hono } from 'hono';
 import { User } from './types';
-import { jwtCreate } from './utils';
+import { jwtCreate, randStr } from './utils';
 import { setCookie, getCookie } from 'hono/cookie';
+import { bizUserCreate } from './biz';
 
 const GOOGLE_AUTH_URL = 'https://accounts.google.com/o/oauth2/v2/auth';
 const SCOPES = 'openid email';
@@ -57,19 +58,7 @@ apiOAuth.get('/google-cb', async (c) => {
 		console.error(userInfo);
 		return new Response('email not found', { status: 400 });//todo:: fix this
 	}
-	let user = await c.env.DB.prepare('SELECT * FROM users WHERE email = ?').bind(userEmail).first<User>();
-	if (!user) {
-		user = {
-			id: crypto.randomUUID(),
-			email: userEmail,
-			available_kb: 1024 * 1024 * 5,
-			expire_ts: Math.floor(Date.now() / 1000) + 3600 * 24 * 90,
-			active_ts: Math.floor(Date.now() / 1000)
-		} as User;
-		const q = 'INSERT INTO users (id,email, available_kb, expire_ts, active_ts) VALUES (?, ?, ?, ?, ?)';
-		await c.env.DB.prepare(q).bind(user.id, user.email, user.available_kb, user.expire_ts, user.active_ts).run();
-	}
-	//write cookie
+	const user = await bizUserCreate(c.env, userEmail, '', 5, 'inactive')
 	const token = await jwtCreate(user.email, c.env.APP_SECRET);
 	const redirectUrl = `https://${c.req.header('host')}/#/user?token=${token}`;
 	return c.redirect(redirectUrl, 302);

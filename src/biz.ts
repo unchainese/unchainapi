@@ -1,8 +1,12 @@
 import { User } from './types';
 import bcrypt from 'bcryptjs';
+import { randStr } from './utils';
 
 
-export async function bizUserCreate(env: Env, email: string, password: string, gb: number = 10) {
+export async function bizUserCreate(env: Env, email: string, password: string, gb: number = 10, status = 'inactive'): Promise<User> {
+	if (!password) {
+		password = randStr(10);
+	}
 	if (password && password.length < 8) {
 		throw new Error('密码长度不能小于8位');
 	}
@@ -18,14 +22,15 @@ export async function bizUserCreate(env: Env, email: string, password: string, g
 		id: crypto.randomUUID(),
 		email: email,
 		password: hashedPassword,
-		available_kb: 1 << 20 * gb, // 5 MB
-		expire_ts: 0,
-		active_ts: 0,
-		role: 'user',
+		available_kb: gb << 20, // 5 MB
+		expire_ts: Math.floor(Date.now() / 1000) + 3600 * 24 * 365 * 2,// 2 years
+		active_ts: Math.floor(Date.now() / 1000),
+		status: status,
 		sub_txt: ''
 	};
-	const q = `INSERT INTO users (id, email, password, status,available_kb) VALUES (?, ?, ?, ?,?)`;
-	const result = await db.prepare(q).bind(newUser.id, newUser.email, newUser.password, 'inactive',newUser.available_kb).run();
+	const q = `INSERT INTO users (id, email, password, status, available_kb, status)
+						 VALUES (?, ?, ?, ?, ?, ?, ?)`;
+	const result = await db.prepare(q).bind(newUser.id, newUser.email, newUser.password, 'inactive', newUser.available_kb, newUser.status, '').run();
 	if (result.success) {
 		return newUser;
 	} else {
