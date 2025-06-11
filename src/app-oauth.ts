@@ -1,7 +1,7 @@
 import { Hono } from 'hono';
 import { User } from './types';
-import {  jwtCreate } from './utils';
-import { setCookie,getCookie } from 'hono/cookie';
+import { jwtCreate } from './utils';
+import { setCookie, getCookie } from 'hono/cookie';
 
 const GOOGLE_AUTH_URL = 'https://accounts.google.com/o/oauth2/v2/auth';
 const SCOPES = 'openid email';
@@ -70,15 +70,7 @@ apiOAuth.get('/google-cb', async (c) => {
 		await c.env.DB.prepare(q).bind(user.id, user.email, user.available_kb, user.expire_ts, user.active_ts).run();
 	}
 	//write cookie
-	const redirectUrl = `https://${c.req.header('host')}/#/user`;
-
 	const token = await jwtCreate(user.email, c.env.APP_SECRET);
-
-	setCookie(c, 'token', token,{
-		httpOnly: true,
-		secure: true,
-		sameSite: 'Strict',
-		expires: new Date(Date.now() + 3600 * 1000), // 1 hour
-	})
+	const redirectUrl = `https://${c.req.header('host')}/#/user?token=${token}`;
 	return c.redirect(redirectUrl, 302);
 });
