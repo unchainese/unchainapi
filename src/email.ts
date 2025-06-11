@@ -7,12 +7,12 @@ import { User } from './types';
 
 export async function mailRouteHandler(message: ForwardableEmailMessage, env: Env, ctx: ExecutionContext): Promise<void> {
 	const to = message.to || '';
-	if (to.startsWith('ai.')) {
+	if (to.startsWith('ai@')) {
 		await mailAi(message, env);
 		return;
 	}
 	//邮件注册
-	if (to.startsWith('register')) {
+	if (to.startsWith('register@')) {
 		await mailRegisterFree(message, env)
 		return;
 	}
@@ -42,7 +42,6 @@ async function mailAi(message: ForwardableEmailMessage, env: Env): Promise<void>
 async function emailSend(message: ForwardableEmailMessage, env: Env, subject: string, body: string) {
 	const msg = createMimeMessage();
 	const emailSubject = message.headers.get('Subject') || '';
-	const senderEmail = message.from;
 	//keep sender's email content
 	const { KV } = env;
 	const mailPair = `${emailSubject}  \n\n ---- \n\n${subject}\n\n ${body}`;
@@ -51,7 +50,7 @@ async function emailSend(message: ForwardableEmailMessage, env: Env, subject: st
 	});
 
 	msg.setHeader('In-Reply-To', message.headers.get('Message-ID') || 'unknown');
-	msg.setSender({ name: '尊敬unchain-VPN用户', addr: senderEmail });
+	msg.setSender({ name: '尊敬unchain-VPN用户', addr: message.to });
 	msg.setRecipient(message.from);
 	msg.setSubject(subject);
 	msg.addMessage({
