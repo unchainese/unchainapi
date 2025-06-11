@@ -2,6 +2,7 @@ import { Hono } from 'hono';
 import { User } from './types';
 import bcrypt from 'bcryptjs';
 import { authCookieSet } from './utils';
+import { bizUserCreate } from './biz';
 
 export const apiAuth = new Hono<{ Bindings: Env }>();
 
@@ -38,33 +39,11 @@ apiAuth.post('/login', async (c) => {
 
 apiAuth.post('/register', async (c) => {
 	const args = await c.req.json<ReqRegister>();
-	const db = c.env.DB;
-	const user = await db.prepare('SELECT * FROM users WHERE email = ?').bind(args.email).first<User>();
-	if (user) {
-		return c.json({ msg: 'Email已经被占用,请到登录页面找回密码', code: 409 });
-	}
-	if (args.password && args.password.length < 8) {
-		return c.json({ msg: '密码长度必须超过8字符', code: 400 });
-	}
-	const hashedPassword = await bcrypt.hash(args.password, 10);
-	// Create new user in the database
-	const newUser: User = {
-		id: crypto.randomUUID(),
-		email: args.email,
-		password: hashedPassword,
-		available_kb: 0, // 5 MB
-		expire_ts: 0,
-		active_ts: 0,
-		role: 'user',
-		sub_txt: ''
-	};
-	const q = `INSERT INTO users (id, email, password, status)
-						 VALUES (?, ?, ?, ?)`;
-	const result = await db.prepare(q).bind(newUser.id, newUser.email, newUser.password, 'inactive').run();
-	if (result.success) {
+	try {
+		const user = await bizUserCreate(c.env, args.email, args.password);
 		return c.json({ msg: '用户注册成功', code: 200 });
-	} else {
-		return c.json({ msg: '用户注册失败', code: 500 });
+	}catch (error) {
+		return c.json({ msg: '用户注册失败: ' + error, code: 500 });
 	}
 });
 
