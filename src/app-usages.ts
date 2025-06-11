@@ -13,5 +13,5 @@ apiUsages.get('/', async (c) => {
     const nowDate = new Date().toISOString().slice(0, 10);
     const qq = `SELECT * FROM usages WHERE created_date <= ? ORDER BY created_date DESC LIMIT ? OFFSET ?`
     const { results } = await db.prepare(qq).bind(nowDate, limit, offset).all<Usage>();
-    return c.json(results)
+		return c.json({ data: results, code: 200})
 })
