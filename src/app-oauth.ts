@@ -1,7 +1,5 @@
 import { Hono } from 'hono';
-import { User } from './types';
-import { jwtCreate, randStr } from './utils';
-import { setCookie, getCookie } from 'hono/cookie';
+import { jwtCreate } from './utils';
 import { bizUserCreate } from './biz';
 
 const GOOGLE_AUTH_URL = 'https://accounts.google.com/o/oauth2/v2/auth';
@@ -58,7 +56,7 @@ apiOAuth.get('/google-cb', async (c) => {
 		console.error(userInfo);
 		return new Response('email not found', { status: 400 });//todo:: fix this
 	}
-	const user = await bizUserCreate(c.env, userEmail, '', 5, 'inactive')
+	const user = await bizUserCreate(c.env, userEmail, '', 5, 'active')
 	const token = await jwtCreate(user.email, c.env.APP_SECRET);
 	const redirectUrl = `https://${c.req.header('host')}/#/user?token=${token}`;
 	return c.redirect(redirectUrl, 302);
