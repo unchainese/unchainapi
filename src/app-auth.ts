@@ -40,6 +40,9 @@ apiAuth.post('/register', async (c) => {
 	const args = await c.req.json<ReqRegister>();
 	try {
 		const user = await bizUserCreate(c.env, args.email, args.password,5,'inactive');
+		if (user.isExistInDB) {
+			return c.json({ msg: '用户已存在', code: 409 });
+		}
 		return c.json({ msg: '用户注册成功', code: 200 });
 	} catch (error) {
 		return c.json({ msg: '用户注册失败: ' + error, code: 500 });

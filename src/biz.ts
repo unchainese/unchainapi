@@ -13,7 +13,8 @@ export async function bizUserCreate(env: Env, email: string, password: string, g
 	const db = env.DB;
 	const user = await db.prepare('SELECT * FROM users WHERE email = ?').bind(email).first<User>();
 	if (user) {
-		throw new Error('Email已经被占用,请使用其他Email注册');
+		user.isExistInDB = true; // Mark user as existing in the database
+		return user;
 	}
 
 	const hashedPassword = await bcrypt.hash(password, 10);
@@ -28,7 +29,8 @@ export async function bizUserCreate(env: Env, email: string, password: string, g
 		status: status,
 		sub_txt: ''//ignore this field,not in database
 	};
-	const query = `INSERT INTO users (id, email, password, available_kb, expire_ts, active_ts, status) VALUES (?, ?, ?, ?, ?, ?, ?)`;
+	const query = `INSERT INTO users (id, email, password, available_kb, expire_ts, active_ts, status)
+								 VALUES (?, ?, ?, ?, ?, ?, ?)`;
 	const result = await db.prepare(query)
 		.bind(newUser.id, newUser.email, newUser.password, newUser.available_kb, newUser.expire_ts, newUser.active_ts, newUser.status)
 		.run();

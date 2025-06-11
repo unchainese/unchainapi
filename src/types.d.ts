@@ -7,6 +7,7 @@ export interface User {
 	sub_txt: string,//not a column in db, just for VLESS URL
 	password?: string,//optional, for login  bcrypt-hashed
 	status?: string,//optional, 'active', 'inactive', 'banned'
+	isExistInDB?: boolean,//not a db column, for check if user exists in DB
 }
 
 export interface Node {
