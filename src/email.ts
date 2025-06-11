@@ -3,6 +3,7 @@ import { EmailMessage } from 'cloudflare:email';
 import { createMimeMessage } from 'mimetext';
 import { User } from './types';
 import { jwtCreate, randStr } from './utils';
+import { bizUserCreate } from './biz';
 
 // npm install mimetext
 
@@ -15,7 +16,7 @@ export async function mailRouteHandler(message: ForwardableEmailMessage, env: En
 	}
 	//邮件注册
 	if (to.startsWith('register@')) {
-		await mailRegisterFree(message, env)
+		await mailRegisterFree(message, env);
 		return;
 	}
 	await mailFall(message, env);
@@ -69,33 +70,19 @@ async function emailSend(message: ForwardableEmailMessage, env: Env, subject: st
 
 
 async function mailRegisterFree(message: ForwardableEmailMessage, env: Env): Promise<void> {
-	const senderEmail = message.from;
-	//1. check if the sender is already registered
-	const db = env.DB;
-	const user = await db.prepare('SELECT * FROM users WHERE email = ?').bind(senderEmail).first<User>();
-	let subject = '';
-	let body = '';
-	if (user) {
-		user.password = ''; // Don't return password in response
-		subject = '您已经注册了';
-		body = `您好, ${user.email} 您已经注册了,请不要重复注册\n ${JSON.stringify(user, null, 2)}`;
-		await emailSend(message, env, subject, body);
-		return;
-	}
-	//create new user
 	const randomPassword = randStr(10);
 	try {
-		const token = await jwtCreate(senderEmail, env.APP_SECRET);
+		await bizUserCreate(env, message.from, randomPassword, 10); // Create user with 10GB free traffic
+		const token = await jwtCreate(message.from, env.APP_SECRET);
 		const userURL = `https://unchain.libragen.cn/#/user?token=${token}`;
-		subject = '注册成功';
-		body = `您好, ${senderEmail} 您的账号已经创建成功,请妥善保存密码 \r\n密码:  ${randomPassword} \r\n 同时你将活动永久 10GB 免费流量`;
-		body += `\r\n请访问以下链接查看您的账号信息: ${userURL}`;
+		const subject = '注册成功';
+		const body = `您好, ${message.from} 您的账号已经创建成功,请妥善保存密码 \r\n密码:  ${randomPassword} \r\n 同时你将活动永久 10GB 免费流量\r\n 请访问以下链接查看您的账号信息: ${userURL}`;
 		await emailSend(message, env, subject, body);
 		return;
 	} catch (e) {
 		console.error(`邮件注册用户失败: ${e}`);
-		subject = '注册失败';
-		body = `您好, ${senderEmail} 您的账号注册失败,请稍后再试或联系管理员.\r\n 错误信息: ${e}`;
+		const subject = '注册失败';
+		const body = `您好, ${message.from} 您的账号注册失败,请稍后再试或联系管理员.\r\n 错误信息: ${e}`;
 		await emailSend(message, env, subject, body);
 	}
 }
