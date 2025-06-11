@@ -14,6 +14,7 @@ apiUser.get('/', async (c) => {
 	if (!user) {
 		return c.json({ code: 404, msg: 'User not found' });
 	}
+	user.password=''; // Don't return password in response
 	const nowTs = Math.floor(Date.now() / 1000) - 3600 * 24;
 	const qq = 'SELECT DISTINCT ip FROM nodes WHERE active_ts > ? LIMIT 100';
 	const { results } = await db.prepare(qq).bind(nowTs).all<Node>();
