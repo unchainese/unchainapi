@@ -25,5 +25,5 @@ apiUser.get('/', async (c) => {
 		return genVLESS(user.id, ip + ':80', 'ip', false);
 	});
 	user.sub_txt = subUrls.join('\n');
-	return c.json(user);
+	return c.json({ code:200,data: user });
 });

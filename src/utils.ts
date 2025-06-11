@@ -1,8 +1,9 @@
 import { setSignedCookie ,getSignedCookie} from 'hono/cookie';
 
+const COOKIE_NAME = 'token';
 export async function  authCookieSet(c: any, email: string) {
 	const maxAge = 3600 * 24 * 30; // 30 days
-	await setSignedCookie(c, 'email', email, c.env.APP_SECRET, {
+	await setSignedCookie(c, COOKIE_NAME, email, c.env.APP_SECRET, {
 		expires: new Date(Date.now() + maxAge * 1000),
 		secure: true,
 		sameSite: 'Strict',
@@ -11,7 +12,7 @@ export async function  authCookieSet(c: any, email: string) {
 }
 
 export async function  authCookieGet(c: any) {
-	const email= await getSignedCookie(c, c.env.APP_SECRET, "email") || "";
+	const email= await getSignedCookie(c, c.env.APP_SECRET, COOKIE_NAME) || "";
 	return email as string
 }
 
@@ -33,7 +34,6 @@ export function removeDuplicates(arr: string[]): string[] {
 			result.push(str);
 		}
 	}
-
 	return result;
 }
 
