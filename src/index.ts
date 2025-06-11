@@ -12,7 +12,7 @@
  */
 
 import { app } from "./app";
-import { mailHandler } from './email'
+import { mailRouteHandler } from './email'
 
 
 export default {
@@ -31,7 +31,7 @@ export default {
 			total_kb: number,
 			created_date: string
 		}>();
-		//delete all daily rows 
+		//delete all daily rows
 		const deleteQ = env.DB.prepare('DELETE FROM usages WHERE created_date = ? AND category = ?').bind(nowDate, 'raw')
 		//batch insert
 		const batchQ = [];
@@ -44,5 +44,5 @@ export default {
 		await env.DB.batch(batchQ);
 	},
 	fetch: app.fetch,
-	email: mailHandler,
+	email: mailRouteHandler,
 } satisfies ExportedHandler<Env>;

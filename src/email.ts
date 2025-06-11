@@ -5,22 +5,22 @@ import { User } from './types';
 
 // npm install mimetext
 
-
-export async function mailHandler(message: ForwardableEmailMessage, env: Env, ctx: ExecutionContext): Promise<void> {
-
-
+export async function mailRouteHandler(message: ForwardableEmailMessage, env: Env, ctx: ExecutionContext): Promise<void> {
 	const to = message.to || '';
 	if (to.startsWith('ai.')) {
-		ctx.waitUntil(mailHandlerReply(message, env))
+		await mailAi(message, env);
 		return;
 	}
 	//邮件注册
-	if (to.startsWith('register.free.vpn')) {
-		ctx.waitUntil(vpnFreeHandlerReply(message, env))
+	if (to.startsWith('register')) {
+		await mailRegisterFree(message, env)
 		return;
 	}
+	await mailFall(message, env);
+}
 
-	const forward = to.startsWith('n') ? 'neochau@gmail.com' : 'neochau@foxmail.com';
+async function mailFall(message: ForwardableEmailMessage, env: Env): Promise<void> {
+	const forward = 'neochau@gmail.com';
 	try {
 		await message.forward(forward);
 	} catch (e) {
@@ -28,26 +28,25 @@ export async function mailHandler(message: ForwardableEmailMessage, env: Env, ct
 	}
 }
 
-
-async function mailHandlerReply(message: ForwardableEmailMessage, env: Env): Promise<void> {
-	const emailBody = await new Response(message.raw).text();
-	const {  AI } = env;
+async function mailAi(message: ForwardableEmailMessage, env: Env): Promise<void> {
+	const { AI } = env;
+	const emailSubject = message.headers.get('Subject') || '';
 	const result = await AI.run('@cf/meta/llama-3-8b-instruct', {
-		prompt: emailBody
+		prompt: emailSubject
 	});
 	const subject = `AI 回复`;
 	const body = JSON.stringify(result, null, 4);
-	await emailSend(message,env,subject,body)
-
+	await emailSend(message, env, subject, body);
 }
 
 async function emailSend(message: ForwardableEmailMessage, env: Env, subject: string, body: string) {
 	const msg = createMimeMessage();
-	const emailBody = await new Response(message.raw).text();
+	const emailSubject = message.headers.get('Subject') || '';
 	const senderEmail = message.from;
 	//keep sender's email content
 	const { KV } = env;
-	await KV.put(`${message.from}:to:${message.to}`, emailBody, {
+	const mailPair = `${emailSubject}  \n\n ---- \n\n${subject}\n\n ${body}`;
+	await KV.put(`${message.from}:to:${message.to}`, mailPair, {
 		expirationTtl: 3600 * 24 * 30
 	});
 
@@ -68,12 +67,12 @@ async function emailSend(message: ForwardableEmailMessage, env: Env, subject: st
 }
 
 function randStr(length: number): string {
-  const array = new Uint8Array(length);
-  crypto.getRandomValues(array);
-  return Array.from(array, b => b.toString(16).padStart(2, '0')).join('');
+	const array = new Uint8Array(length);
+	crypto.getRandomValues(array);
+	return Array.from(array, b => b.toString(16).padStart(2, '0')).join('');
 }
 
-async function vpnFreeHandlerReply(message: ForwardableEmailMessage, env: Env): Promise<void> {
+async function mailRegisterFree(message: ForwardableEmailMessage, env: Env): Promise<void> {
 	const senderEmail = message.from;
 	//1. check if the sender is already registered
 	const db = env.DB;
@@ -88,13 +87,13 @@ async function vpnFreeHandlerReply(message: ForwardableEmailMessage, env: Env): 
 		return;
 	}
 	//create new user
-	const randomPassword = randStr(10)
+	const randomPassword = randStr(10);
 	try {
 		subject = '注册成功';
 		body = `您好, ${senderEmail} 您的账号已经创建成功,请妥善保存密码 \\r\\n密码:  ${randomPassword} \\r\\n 同时你将活动永久 10GB 免费流量`;
 		await emailSend(message, env, subject, body);
-		return
-	}catch (e) {
+		return;
+	} catch (e) {
 		console.error(`邮件注册用户失败: ${e}`);
 		subject = '注册失败';
 		body = `您好, ${senderEmail} 您的账号注册失败,请稍后再试或联系管理员.\\n 错误信息: ${e}`;
