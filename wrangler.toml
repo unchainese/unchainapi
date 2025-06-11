@@ -25,7 +25,7 @@ enabled = true
  [vars]
 REDIRECT_URI = "https://unchain.libragen.cn/api/oauth/google-cb"
 GOOGLE_CLIENT_ID = "800757779970-ogh0u2a80jpi0pdmehbc46poqi5oucpf.apps.googleusercontent.com"
-
+ADMIN_EMAIL="neochau@gmail.com"
 
 [env.staging.vars]
 API_HOST = "staging.example.com"
