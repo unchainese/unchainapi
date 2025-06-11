@@ -1,8 +1,9 @@
 import { Hono } from "hono";
 import { Node, User } from "./types";
+import { mwAuth } from './mw-auth';
 
 
-export const apiNodes = new Hono<{ Bindings: Env }>()
+export const apiNodes = new Hono<{ Bindings: Env }>().use(mwAuth)
 
 
 interface AppStat {

@@ -1,8 +1,6 @@
 import { Hono } from 'hono';
 import { User } from './types';
-import {
-	setSignedCookie,
-} from 'hono/cookie'
+import { authCookieSet } from './utils';
 
 const GOOGLE_AUTH_URL = 'https://accounts.google.com/o/oauth2/v2/auth';
 const SCOPES = 'openid email';
@@ -73,14 +71,7 @@ apiOAuth.get('/google-cb', async (c) => {
 	//write cookie
 	const redirectUrl = `https://${c.req.header('host')}/`;
 
-	const expireDuration = 3600 * 24;
-
-	await setSignedCookie(c,"token",user.email,c.env.APP_SECRET,{
-		expires: new Date(Date.now() + expireDuration * 1000),
-		secure: true,
-		sameSite: 'Strict',
-		httpOnly: true,
-	});
+	await authCookieSet(c, user.email);
 
 	return c.redirect(redirectUrl, 302);
 });

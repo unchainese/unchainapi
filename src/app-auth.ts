@@ -1,11 +1,9 @@
 import { Hono } from 'hono';
 import { User } from './types';
 import bcrypt from 'bcryptjs';
-import { sign } from 'hono/jwt';
-
+import { authCookieSet } from './utils';
 
 export const apiAuth = new Hono<{ Bindings: Env }>();
-
 
 interface ReqLogin {
 	email: string,
@@ -23,21 +21,17 @@ apiAuth.post('/login', async (c) => {
 	const db = c.env.DB;
 	const user = await db.prepare('SELECT * FROM users WHERE email = ?').bind(args.email).first<User>();
 	if (!user) {
-		return c.json({ code: 401,msg:"无效用户"});
+		return c.json({ code: 401, msg: '无效用户' });
 	}
 	if (!user.password) {
-		return c.json({ code: 401,msg:"用户没有设置密码,请使用GoogleOauth2登录"});
+		return c.json({ code: 401, msg: '用户没有设置密码,请使用GoogleOauth2登录' });
 	}
 	const isMatch = await bcrypt.compare(args.password, user.password);
 	if (!isMatch) {
-		return c.json({ code: 401,msg:"密码错误"});
+		return c.json({ code: 401, msg: '密码错误' });
 	}
-	const maxAge = 3600 * 24 * 30; // 30 days
-	const payload = { id: user.id, email: user.email, exp: Math.floor(Date.now() / 1000) + maxAge };
-	const token = await sign(payload, c.env.APP_SECRET);
-	//set cookie
-	c.header('Set-Cookie', `token=${token}; HttpOnly; Secure; SameSite=Strict; Path=/; Max-Age=${maxAge}`); // 30 days
-	return c.json({ code: 200, token, user: { id: user.id, email: user.email, available_kb: user.available_kb, expire_ts: user.expire_ts } });
+	await authCookieSet(c,user.email)
+	return c.json({ code: 200, data: { id: user.id, email: user.email, available_kb: user.available_kb, expire_ts: user.expire_ts } });
 
 });
 
@@ -85,5 +79,11 @@ apiAuth.post('/reset', async (c) => {
 
 apiAuth.get('/reset-verify', async (c) => {
 	//todo send the email to reset password
-	return c.json({ msg: 'Reset password email sent' });
+	return c.json({ msg: '密码重置邮件已经发送,请登录你的邮箱完成密码重置' });
 });
+
+apiAuth.get('/logout', async (c) => {
+	c.header('Set-Cookie', 'token=; HttpOnly; Secure; SameSite=Strict; Path=/; Max-Age=0'); // Clear the cookie
+	return c.json({ msg: '已登出', code: 200 });
+});
+

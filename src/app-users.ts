@@ -1,6 +1,7 @@
 import { Node, User } from "./types";
 import { Hono } from "hono";
 import { mwAuth } from './mw-auth';
+import { genVLESS, removeDuplicates } from './utils';
 
 
 export const apiUsers = new Hono<{ Bindings: Env }>().use(mwAuth)
@@ -80,25 +81,6 @@ apiUsers.delete("/", async (c) => {
 })
 
 
-
-function genVLESS(userID: string, addrWithPort: string, hostName: string, tls: boolean): string {
-    const path = encodeURIComponent("/wsv/v1?ed=2560");
-    return `vless://${userID}@${addrWithPort}?encryption=none&security=${tls ? "tls" : "none"}&type=ws&host=${hostName}&sni=${hostName}&fp=random&path=${path}#${addrWithPort}`;
-}
-
-function removeDuplicates(arr: string[]): string[] {
-    const map = new Map<string, boolean>();
-    const result: string[] = [];
-
-    for (const str of arr) {
-        if (!map.has(str)) {
-            map.set(str, true);
-            result.push(str);
-        }
-    }
-
-    return result;
-}
 
 
 

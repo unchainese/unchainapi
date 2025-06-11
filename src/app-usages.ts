@@ -1,8 +1,9 @@
 import { Hono } from "hono";
 import { Usage } from "./types";
+import { mwAuth } from './mw-auth';
 
 
-export const apiUsages = new Hono<{ Bindings: Env }>()
+export const apiUsages = new Hono<{ Bindings: Env }>().use(mwAuth)
 
 
 apiUsages.get('/', async (c) => {

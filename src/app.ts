@@ -7,14 +7,15 @@ import { apiOAuth } from './app-oauth'
 import { apiEmails } from './app-email'
 import { apiTelegram } from './app-telegram'
 import { apiVLESS } from './app-vless'
-import { mwAuth } from './mw-auth';
 import { apiAuth } from './app-auth';
+import { apiUser } from './app-user';
 
 
 
-export const app = new Hono<{ Bindings: Env }>()
+export const app = new Hono<{ Bindings: Env, Variables: Variables }>()
 
 
+app.route('/api/user', apiUser)
 app.route('/api/users', apiUsers)
 app.route('/api/nodes', apiNodes)
 app.route('/api/usages', apiUsages)

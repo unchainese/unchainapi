@@ -2,12 +2,17 @@
 
 interface Env {
 	KV: KVNamespace;
-	REDIRECT_URI: "https://unchainadmin.pages.dev/auth/google-cb";
+	REDIRECT_URI: 'https://unchainadmin.pages.dev/auth/google-cb';
 	DST_MAIL: string;
 	TELEGRAM_TOKEN: string;
 	APP_SECRET: string;//app secret
+	ADMIN_EMAIL: string;
 	GOOGLE_CLIENT_ID: string;
 	GOOGLE_CLIENT_SECRET: string;
 	DB: D1Database;
-	AI:Ai;
+	AI: Ai;
+}
+
+type Variables = {
+	email: string
 }
