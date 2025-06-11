@@ -4,10 +4,13 @@ import { sign, verify } from 'hono/jwt';
 const maxAge = 3600 * 24 * 14; // 30 days
 
 
-export function randStr(length: number): string {
-	const array = new Uint8Array(length);
-	crypto.getRandomValues(array);
-	return Array.from(array, b => b.toString(16).padStart(2, '0')).join('');
+export function randStr(length: number=8): string {
+	const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_-!@#$%^&*()';
+	let result = '';
+	for (let i = 0; i < length; i++) {
+		result += characters.charAt(Math.floor(Math.random() * characters.length));
+	}
+	return result;
 }
 
 

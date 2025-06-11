@@ -26,11 +26,13 @@ export async function bizUserCreate(env: Env, email: string, password: string, g
 		expire_ts: Math.floor(Date.now() / 1000) + 3600 * 24 * 365 * 2,// 2 years
 		active_ts: Math.floor(Date.now() / 1000),
 		status: status,
-		sub_txt: ''
+		sub_txt: ''//ignore this field,not in database
 	};
-	const q = `INSERT INTO users (id, email, password, status, available_kb, status)
-						 VALUES (?, ?, ?, ?, ?, ?, ?)`;
-	const result = await db.prepare(q).bind(newUser.id, newUser.email, newUser.password, 'inactive', newUser.available_kb, newUser.status, '').run();
+	const query = `INSERT INTO users (id, email, password, available_kb, expire_ts, active_ts, status) VALUES (?, ?, ?, ?, ?, ?, ?)`;
+	const result = await db.prepare(query)
+		.bind(newUser.id, newUser.email, newUser.password, newUser.available_kb, newUser.expire_ts, newUser.active_ts, newUser.status)
+		.run();
+
 	if (result.success) {
 		return newUser;
 	} else {
