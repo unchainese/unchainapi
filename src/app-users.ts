@@ -1,10 +1,10 @@
 import { Node, User } from "./types";
 import { Hono } from "hono";
-import { mwAuth } from './mw-auth';
+import { mwAuthFn } from './mw-auth';
 import { genVLESS, removeDuplicates } from './utils';
 
 
-export const apiUsers = new Hono<{ Bindings: Env }>().use(mwAuth)
+export const apiUsers = new Hono<{ Bindings: Env }>().use(mwAuthFn(true))
 
 
 apiUsers.get('/:id', async (c) => {

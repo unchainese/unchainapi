@@ -1,4 +1,3 @@
-import { getSignedCookie, setSignedCookie } from 'hono/cookie';
 import { sign, verify } from 'hono/jwt';
 
 const maxAge = 3600 * 24 * 14; // 30 days
