@@ -84,11 +84,15 @@ async function mailRegisterFree(message: ForwardableEmailMessage, env: Env): Pro
 		}
 		const token = await jwtCreate(message.from, env.APP_SECRET);
 		const userURL = `https://unchain.libragen.cn/#/user?token=${token}`;
-		const subject = '注册成功';
+		const subject = 'unchain-VPN账号创建成功';
 		const body = `您好, ${message.from}
 您的账号已经创建成功,请妥善保存密码
-\r\n密码:  ${randomPassword}
+\r\n 密码:  ${randomPassword}
+\r\n 建议收藏这封邮件,以便以后查看账号信息.防止失联.
 \r\n 同时你将活动永久 10GB 免费流量
+\r\r 请妥善保存账号信息,如果忘记密码可以通过邮箱找回.
+\r\n 如果需要更多流量,请发送邮件到 store@libragen.cn 或者 访问 https://unchain.libragen.cn/#/store 购买.
+\r\n 科学上网主页地址 : https://unchain.libragen.cn/#/
 \r\n 请访问以下链接查看您的账号信息(链接有效期30天): ${userURL}`;
 
 		await emailSend(message, env, subject, body);
