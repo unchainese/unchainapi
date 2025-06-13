@@ -11,7 +11,7 @@ apiTickets.get('/', async (c) => {
 	const limit = parseInt(c.req.query('limit') || '10');
 	const db = c.env.DB;
 	const nowTs = Math.floor(Date.now() / 1000) - 3600 * 24*30;
-	const qq = "SELECT * FROM tickets WHERE created_ts > ? ORDER BY active_ts DESC LIMIT ? OFFSET ?";
+	const qq = "SELECT * FROM tickets WHERE created_ts > ? ORDER BY updated_ts DESC LIMIT ? OFFSET ?";
 	const { results } = await db.prepare(qq).bind(nowTs, limit, offset).all<Ticket>();
 	return c.json({ data: results, code: 200 });
 });
