@@ -1,4 +1,4 @@
-import { Node, User } from './types';
+import { Node, Ticket, Usage, User } from './types';
 import { Hono } from 'hono';
 import { mwAuthFn } from './mw-auth';
 import { genVLESS, removeDuplicates } from './utils';
@@ -27,7 +27,12 @@ apiUser.get('/', async (c) => {
 		return genVLESS(user.id, ip + ':80', domain, false);
 	});
 	user.sub_txt = subUrls.join('\n');
-	return c.json({ code: 200, data: user });
+
+	const { results: usages } = await db.prepare('SELECT * FROM usages WHERE uid = ? ORDER BY created_date DESC')
+		.bind(user.id).all<Usage>();
+	const { results: tickets } = await db.prepare('SELECT * FROM tickets WHERE email = ? ORDER BY created_ts DESC')
+		.bind(email).all<Ticket>();
+	return c.json({ code: 200, data: { user, tickets, usages } });
 });
 
 
