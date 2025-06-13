@@ -25,7 +25,7 @@ apiAuth.post('/login', async (c) => {
 		return c.json({ code: 401, msg: '无效用户' });
 	}
 	if (!user.password) {
-		return c.json({ code: 401, msg: '用户没有设置密码,请使用GoogleOauth2登录' });
+		return c.json({ code: 401, msg: '用户没有设置密码,请使用Google-Oauth2登录' });
 	}
 	const isMatch = await bcrypt.compare(args.password, user.password);
 	if (!isMatch) {
@@ -39,7 +39,7 @@ apiAuth.post('/login', async (c) => {
 apiAuth.post('/register', async (c) => {
 	const args = await c.req.json<ReqRegister>();
 	try {
-		const user = await bizUserCreate(c.env, args.email, args.password,5,'inactive');
+		const user = await bizUserCreate(c.env, args.email, args.password,10,'inactive');
 		if (user.isExistInDB) {
 			return c.json({ msg: '用户已存在', code: 409 });
 		}

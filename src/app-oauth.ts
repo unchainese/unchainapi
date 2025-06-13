@@ -56,7 +56,7 @@ apiOAuth.get('/google-cb', async (c) => {
 		console.error(userInfo);
 		return new Response('email not found', { status: 400 });//todo:: fix this
 	}
-	const user = await bizUserCreate(c.env, userEmail, '', 5, 'active')
+	const user = await bizUserCreate(c.env, userEmail, '', 10, 'active')
 	const token = await jwtCreate(user.email, c.env.APP_SECRET);
 	const redirectUrl = `https://${c.req.header('host')}/#/user?token=${token}`;
 	return c.redirect(redirectUrl, 302);
