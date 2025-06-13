@@ -2,7 +2,7 @@
 
 interface Env {
 	KV: KVNamespace;
-	REDIRECT_URI: 'https://unchainadmin.pages.dev/auth/google-cb';
+	REDIRECT_URI: string;
 	DST_MAIL: string;
 	TELEGRAM_TOKEN: string;
 	APP_SECRET: string;//app secret
