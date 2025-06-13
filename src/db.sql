@@ -19,3 +19,15 @@ CREATE TABLE temp_emails (
     forward_email VARCHAR(255) NOT NULL,
     expire_ts INT NOT NULL
 );
+
+
+
+CREATE TABLE tickets (
+						 id INTEGER PRIMARY KEY AUTOINCREMENT,
+						 email TEXT DEFAULT '',
+						 title TEXT DEFAULT '',
+						 content TEXT DEFAULT '' ,
+						 feedback TEXT DEFAULT '',
+						 created_ts DATETIME DEFAULT CURRENT_TIMESTAMP,
+						 updated_ts DATETIME DEFAULT CURRENT_TIMESTAMP
+);

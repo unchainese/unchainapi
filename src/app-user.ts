@@ -58,3 +58,25 @@ apiUser.post('/change-password', async (c) => {
 	}
 	return c.json({ code: 200, msg: '密码修改成功' });
 });
+
+
+apiUser.post('/ticket', async (c) => {
+	const email = c.var.email || '';
+	const db = c.env.DB;
+	const user = await db.prepare('SELECT * FROM users WHERE email = ?').bind(email).first<User>();
+	if (!user) {
+		return c.json({ code: 404, msg: 'User not found' });
+	}
+	const args = await c.req.json<{ title: string, content: string }>();
+
+	if (!args.title || !args.content) {
+		return c.json({ code: 400, msg: '标题和内容不能为空' });
+	}
+
+	const result = await db.prepare('INSERT INTO tickets (email, title, content) VALUES (?, ?, ?)')
+		.bind(email, args.title, args.content).run();
+	if (!result.success) {
+		return c.json({ code: 500, msg: '数据库写入工单失败' });
+	}
+	return c.json({ code: 200, msg: '工单创建成功' });
+});

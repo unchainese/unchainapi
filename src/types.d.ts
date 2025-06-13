@@ -10,6 +10,30 @@ export interface User {
 	isExistInDB?: boolean,//not a db column, for check if user exists in DB
 }
 
+/*
+* CREATE TABLE tickets (
+						 id INTEGER PRIMARY KEY AUTOINCREMENT,
+						 email TEXT DEFAULT '',
+						 title TEXT DEFAULT '',
+						 content TEXT DEFAULT '' ,
+						 feedback TEXT DEFAULT '',
+						 created_ts DATETIME DEFAULT CURRENT_TIMESTAMP,
+						 updated_ts DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+*
+* */
+
+export interface Ticket {
+	id: number;
+	email: string; // user email
+	title: string; // ticket title
+	content: string; // ticket content
+	feedback: string; // admin feedback
+	created_ts: number; // timestamp of creation
+	updated_ts: number; // timestamp of last update
+}
+
 export interface Node {
 	hostname: string
 	ip: string
