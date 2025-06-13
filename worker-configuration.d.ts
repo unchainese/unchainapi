@@ -7,6 +7,7 @@ interface Env {
 	TELEGRAM_TOKEN: string;
 	APP_SECRET: string;//app secret
 	ADMIN_EMAIL: string;
+	APP_DOMAIN: string;
 	GOOGLE_CLIENT_ID: string;
 	GOOGLE_CLIENT_SECRET: string;
 	DB: D1Database;

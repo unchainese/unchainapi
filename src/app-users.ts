@@ -20,9 +20,9 @@ apiUsers.get('/:id', async (c) => {
 	const ips = results.map((r) => {
 		return r.ip.trim();
 	}).flat().map((addr) => addr.trim());
-
+	const domain = c.env.APP_DOMAIN || 'jp.aliyun.com';
 	const subUrls = removeDuplicates(ips).map((ip) => {
-		return genVLESS(id, ip + ':80', 'ip', false);
+		return genVLESS(id, ip + ':80', domain, false);
 	});
 	user.sub_txt = subUrls.join('\n');
 	return c.json(user);
