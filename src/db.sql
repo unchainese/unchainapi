@@ -28,6 +28,6 @@ CREATE TABLE tickets (
 						 title TEXT DEFAULT '',
 						 content TEXT DEFAULT '' ,
 						 feedback TEXT DEFAULT '',
-						 created_ts DATETIME DEFAULT CURRENT_TIMESTAMP,
-						 updated_ts DATETIME DEFAULT CURRENT_TIMESTAMP
+						 created_ts INTEGER DEFAULT 0,
+						 updated_ts INTEGER DEFAULT 0
 );

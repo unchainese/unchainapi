@@ -10,19 +10,7 @@ export interface User {
 	isExistInDB?: boolean,//not a db column, for check if user exists in DB
 }
 
-/*
-* CREATE TABLE tickets (
-						 id INTEGER PRIMARY KEY AUTOINCREMENT,
-						 email TEXT DEFAULT '',
-						 title TEXT DEFAULT '',
-						 content TEXT DEFAULT '' ,
-						 feedback TEXT DEFAULT '',
-						 created_ts DATETIME DEFAULT CURRENT_TIMESTAMP,
-						 updated_ts DATETIME DEFAULT CURRENT_TIMESTAMP
-);
 
-*
-* */
 
 export interface Ticket {
 	id: number;

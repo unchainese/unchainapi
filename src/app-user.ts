@@ -22,7 +22,7 @@ apiUser.get('/', async (c) => {
 	const ips = results.map((r) => {
 		return r.ip.trim();
 	}).flat().map((addr) => addr.trim());
-	const domain  = c.env.APP_DOMAIN || 'jp.aliyun.com';
+	const domain = c.env.APP_DOMAIN || 'jp.aliyun.com';
 	const subUrls = removeDuplicates(ips).map((ip) => {
 		return genVLESS(user.id, ip + ':80', domain, false);
 	});
@@ -72,9 +72,9 @@ apiUser.post('/ticket', async (c) => {
 	if (!args.title || !args.content) {
 		return c.json({ code: 400, msg: '标题和内容不能为空' });
 	}
-
-	const result = await db.prepare('INSERT INTO tickets (email, title, content) VALUES (?, ?, ?)')
-		.bind(email, args.title, args.content).run();
+	const nowTs = Math.floor(Date.now() / 1000);
+	const result = await db.prepare('INSERT INTO tickets (email, title, content,created_ts) VALUES (?, ?, ?,?)')
+		.bind(email, args.title, args.content, nowTs).run();
 	if (!result.success) {
 		return c.json({ code: 500, msg: '数据库写入工单失败' });
 	}
