@@ -77,3 +77,5 @@ export async function jwtVerify(token: string, secret: string): Promise<UserJWT>
 		exp: user.exp
 	};
 }
+
+
