@@ -9,6 +9,7 @@ import { apiAuth } from './app-auth';
 import { apiUser } from './app-user';
 import { apiNode } from './app-node';
 import { apiTickets } from './app-tickets';
+import { apiLinks, apiS } from './app-short';
 
 
 export const app = new Hono<{ Bindings: Env, Variables: Variables }>();
@@ -27,3 +28,7 @@ app.route('/api/user', apiUser);//user auth
 app.route('/api/auth', apiAuth);
 app.route('/api/oauth', apiOAuth);
 app.route('/api/telegram', apiTelegram);
+
+
+app.route('/links', apiLinks);//for interviews
+app.route('/s', apiS);//for interviews
