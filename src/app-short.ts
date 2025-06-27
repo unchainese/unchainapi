@@ -14,12 +14,21 @@ const mwCheckJsonUrl = zValidator(
 )
 
 function randomSlug(length: number): string {
-  const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_';
-  let slug = '';
-  for (let i = 0; i < length; i++) {
-    slug += chars.charAt(Math.floor(Math.random() * chars.length));
-  }
-  return slug;
+	// Unicode ranges for emoji: faces (U+1F600–U+1F64F), objects (U+1F680–U+1F6FF)
+	const emojiRanges = [
+		[0x1F600, 0x1F64F], // Emoticons (faces)
+		[0x1F680, 0x1F6FF], // Transport & map symbols (objects)
+	];
+	function randomEmoji() {
+		const [start, end] = emojiRanges[Math.floor(Math.random() * emojiRanges.length)];
+		const codePoint = start + Math.floor(Math.random() * (end - start + 1));
+		return String.fromCodePoint(codePoint);
+	}
+	let slug = '';
+	for (let i = 0; i < length; i++) {
+		slug += randomEmoji();
+	}
+	return slug;
 }
 
 apiLinks.post('/', mwCheckJsonUrl,async (c) => {

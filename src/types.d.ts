@@ -28,7 +28,6 @@ export interface Node {
 	active_ts: number
 	goroutine: number;
 	version_info: string,
-	sub_addresses: string,// eg a.ex.com:90,b.ex.com:443,c.ex.com:8080
 }
 
 

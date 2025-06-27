@@ -8,20 +8,20 @@ export const apiNode = new Hono<{ Bindings: Env }>();
 interface AppStat {
 	traffic: { [key: string]: number };//uuid -> KB number
 	hostname: string;
-	sub_addresses: string[];
 	goroutine: number;
 	version_info: string,
 }
+
+
 
 apiNode.post('/', async (c) => {
 	const body = await c.req.json<AppStat>();
 	const db = c.env.DB;
 	const nowTs = Math.floor(Date.now() / 1000);
 	const clientIP = c.req.header('cf-connecting-ip') || '';
-	const sub_addresses = body.sub_addresses.join(',');
 	await db.prepare('DELETE FROM nodes WHERE ip = ?').bind(clientIP).run();
-	const qq = 'INSERT INTO nodes (hostname, ip, active_ts, goroutine, version_info, sub_addresses) VALUES (?, ?, ?, ?, ?, ?)';
-	await db.prepare(qq).bind(body.hostname, clientIP, nowTs, body.goroutine, body.version_info, sub_addresses).run();
+	const qq = 'INSERT INTO nodes (hostname, ip, active_ts, goroutine, version_info) VALUES (?, ?, ?, ?, ?)';
+	await db.prepare(qq).bind(body.hostname, clientIP, nowTs, body.goroutine, body.version_info).run();
 
 	const qqq = 'SELECT * FROM users WHERE expire_ts > ? AND available_kb > ?';
 	const { results } = await db.prepare(qqq).bind(nowTs, 0).all<User>();
