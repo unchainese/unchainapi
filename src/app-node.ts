@@ -16,6 +16,7 @@ interface AppStat {
 
 apiNode.post('/', async (c) => {
 	const body = await c.req.json<AppStat>();
+	console.log('node register', body);
 	const db = c.env.DB;
 	const nowTs = Math.floor(Date.now() / 1000);
 	const clientIP = c.req.header('cf-connecting-ip') || '';
@@ -29,6 +30,7 @@ apiNode.post('/', async (c) => {
 	const allowUsers: { [key: string]: number } = {};
 	const stmtList: D1PreparedStatement[] = [];
 	const nowDate = new Date().toISOString().slice(0, 10);
+	body.traffic = (typeof body.traffic === 'object' && body.traffic !== null) ? body.traffic : {};
 	for (const u of results) {
 		const id = u.id;
 		let usedKB = body.traffic[id] || 0;
